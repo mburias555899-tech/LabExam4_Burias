@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('customer_name');
-            $table->foreignId('menu_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('menu_id')->constrained()->cascadeOnDelete();
             $table->integer('quantity');
-            $table->decimal('total_price', 8, 2);
-            $table->string('status');
+            $table->decimal('total_cost', 10, 2);
+            $table->enum('status', ['Pending', 'Processing', 'Completed'])
+                  ->default('Pending');
+
             $table->timestamps();
         });
     }

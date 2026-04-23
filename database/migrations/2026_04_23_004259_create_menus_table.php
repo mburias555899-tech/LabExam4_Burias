@@ -15,9 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('category');
-            $table->decimal('price_per_kg', 10, 2);
-            $table->integer('stock');
-            $table->text('description')->nullable();
+            $table->decimal('price_per_kilo', 10, 2);
+            $table->string('stock')->default('0 kg');
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('menus');
+        Schema::dropIfExists('menus'); 
     }
 };

@@ -1,56 +1,99 @@
-<x-app-layout>
-    <x-slot name='header'>
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Menu') }}
-        </h2>
-    </x-slot>
+<h2>Rice Menu</h2>
 
-   @if (session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-            <strong class="font-bold">Success!</strong>
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
+<a href="{{ route('dashboard') }}">
+    <button type="button">⬅ Back to Dashboard</button>
+</a>
+
+@if(session('success'))
+    <p style="color: green;">{{ session('success') }}</p>
+@endif
+
+<hr>
+
+
+<form action="{{ isset($menu) ? route('menu.update', $menu->id) : route('menu.store') }}" method="POST">
+    @csrf
+
+    @if(isset($menu))
+        @method('PUT')
     @endif
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <a href="{{ route('menus.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Menu Item</a>
-                    <table class="min-w-full bg-white">
-                        <thead>
-                            <tr>
-                                <th class="py-2">Name
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
 
+        <input type="text" name="name" placeholder="Rice Name"
+            value="{{ $menu->name ?? '' }}" required>
 
-                                </th>                                
-                                <th class="py-2">Price per kg</th>
-                                <th class="py-2">Stock Quantity</th>
-                                <th class="py-2">Description</th>
-                                <th class="py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($menus as $menu)
-                                <tr>
-                                    <td class="border px-4 py-2">{{ $menu->name }}</td>
-                                    <td class="border px-4 py-2">{{ $menu->price_per_kg }}</td>
-                                    <td class="border px-4 py-2">{{ $menu->stock_quantity }}</td>
-                                    <td class="border px-4 py-2">{{ $menu->description }}</td>
-                                    <td class="border px-4 py-2">
-                                        <a href="{{ route('menus.edit', $menu->id) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</a>
-                                        <form action="{{ route('menus.destroy', $menu->id) }}" method="POST" class="inline-block">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onclick="return confirm('Are you sure you want to delete this menu item?')">Delete</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <input type="text" name="category" placeholder="Category"
+            value="{{ $menu->category ?? '' }}" required>
+
+        <div style="display:flex; align-items:center; gap:5px;">
+            <input type="number" step="0.01" name="price_per_kilo"
+                placeholder="Price"
+                value="{{ $menu->price_per_kilo ?? '' }}"
+                required>
+            <span>/ kg</span>
         </div>
+
+        <div style="display:flex; align-items:center; gap:5px;">
+            <input type="number" name="stock"
+                placeholder="Stock"
+                value="{{ $menu->stock ?? '' }}"
+                required>
+            <span>kg</span>
+        </div>
+
+        <button type="submit">
+            {{ isset($menu) ? 'Update' : 'Add' }}
+        </button>
+
     </div>
-</x-app-layout>
+</form>
+
+<hr>
+
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price / kg</th>
+        <th>Stock</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    @foreach($menus as $menuItem)
+    <tr>
+        <td>{{ $menuItem->id }}</td>
+        <td>{{ $menuItem->name }}</td>
+        <td>{{ $menuItem->category }}</td>
+        <td>₱{{ $menuItem->price_per_kilo }}</td>
+        <td>{{ $menuItem->stock }} kg</td>
+
+        <td>
+            @if($menuItem->stock <= 0)
+                <span style="color:red;">Out of Stock</span>
+            @elseif($menuItem->stock < 10)
+                <span style="color:orange;">Low Stock</span>
+            @else
+                <span style="color:green;">Available</span>
+            @endif
+        </td>
+
+        <td>
+            <a href="{{ route('menu.edit', $menuItem->id) }}">Edit</a>
+
+            |
+
+            <form action="{{ route('menu.delete', $menuItem->id) }}" method="POST" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button onclick="return confirm('Delete this item?')">
+                    Delete
+                </button>
+            </form>
+        </td>
+    </tr>
+    @endforeach
+</table>

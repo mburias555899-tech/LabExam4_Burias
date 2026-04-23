@@ -2,52 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Menu;
 use Illuminate\Http\Request;
+use App\Models\Menu;
 
 class MenuController extends Controller
 {
     public function index()
     {
         $menus = Menu::all();
-        return view('menu.index', compact('menus'));
+        $menu = null;
+
+        return view('menu', compact('menus', 'menu'));
     }
 
-    public function create()
+    public function edit($id)
     {
-        return view('menu.create');
+        $menus = Menu::all();
+        $menu = Menu::findOrFail($id);
+
+        return view('menu', compact('menus', 'menu'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'category' => 'required',
-            'price_per_kg' => 'required|numeric',
-            'stock' => 'required|integer',
+            'name' => 'required|string',
+            'category' => 'required|string',
+            'price_per_kilo' => 'required|numeric|min:0',
+            'stock' => 'required|numeric|min:0'
         ]);
 
-        Menu::create($request->all());
+        Menu::create([
+            'name' => $request->name,
+            'category' => $request->category,
+            'price_per_kilo' => $request->price_per_kilo,
+            'stock' => (int) $request->stock
+        ]);
 
-        return redirect()->route('menus.index')->with('success', 'Menu added successfully');
+        return redirect()->route('menu.index')->with('success', 'Rice added');
     }
 
-    public function edit(Menu $menu)
+    public function update(Request $request, $id)
     {
-        return view('menu.edit', compact('menu'));
+        $menu = Menu::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string',
+            'category' => 'required|string',
+            'price_per_kilo' => 'required|numeric|min:0',
+            'stock' => 'required|numeric|min:0'
+        ]);
+
+        $menu->update([
+            'name' => $request->name,
+            'category' => $request->category,
+            'price_per_kilo' => $request->price_per_kilo,
+            'stock' => (int) $request->stock
+        ]);
+
+        return redirect()->route('menu.index')->with('success', 'Updated successfully');
     }
 
-    public function update(Request $request, Menu $menu)
+    public function destroy($id)
     {
-        $menu->update($request->all());
+        Menu::destroy($id);
 
-        return redirect()->route('menus.index')->with('success', 'Menu updated');
-    }
-
-    public function destroy(Menu $menu)
-    {
-        $menu->delete();
-
-        return redirect()->route('menus.index')->with('success', 'Menu deleted');
+        return redirect()->route('menu.index')->with('success', 'Deleted successfully');
     }
 }

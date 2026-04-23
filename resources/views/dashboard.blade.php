@@ -10,6 +10,15 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     {{ __("You're logged in!") }}
+                    <x-primary-button onclick="window.location.href='{{ route('menu.index') }}'">
+                        Go to Menu View
+                    </x-primary-button>
+                    <x-primary-button onclick="window.location.href='{{ route('orders.index') }}'">
+                        Go to Order View
+                    </x-primary-button>
+                    <x-primary-button onclick="window.location.href='{{ route('payments.index') }}'">
+                        Go to Payment View
+                    </x-primary-button>
                 </div>
             </div>
         </div>

@@ -1,37 +1,66 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Payment') }}
-        </h2>
-    </x-slot>
+<h2>Payments</h2>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <table class="table-auto w-full">
-                        <thead>
-                            <tr>
-                                <th class="px-4 py-2">Name</th>
-                                <th class="px-4 py-2">Amount</th>
-                                <th class="px-4 py-2">Payment Date</th>
-                                <th class="px-4 py-2">Payment Method</th>
-                                <th class="px-4 py-2">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($payments as $payment)
-                                <tr>
-                                    <td class="border px-4 py-2">{{ $payment->name }}</td>
-                                    <td class="border px-4 py-2">{{ $payment->amount }}</td>
-                                    <td class="border px-4 py-2">{{ $payment->payment_date }}</td>
-                                    <td class="border px-4 py-2">{{ $payment->payment_method }}</td>
-                                    <td class="border px-4 py-2">{{ $payment->status }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+<a href="{{ route('dashboard') }}">
+    <button type="button">⬅ Back to Dashboard</button>
+</a>
+
+@if(session('success'))
+    <p style="color: green;">{{ session('success') }}</p>
+@endif
+
+@if(session('error'))
+    <p style="color: red;">{{ session('error') }}</p>
+@endif
+
+<hr>
+
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Order Code</th>
+    <th>Total</th>
+    <th>Pay</th>
+</tr>
+
+@foreach($orders as $order)
+<tr>
+    <td>ORD-{{ $order->id }}</td>
+    <td>₱{{ $order->total_cost }}</td>
+    <td>
+        <form action="{{ route('payments.pay', $order->id) }}" method="POST">
+            @csrf
+
+            <input type="number" name="amount_paid" placeholder="Enter payment" min="0" required>
+
+            <button type="submit">Pay</button>
+        </form>
+    </td>
+</tr>
+@endforeach
+</table>
+
+<hr>
+
+<h3>Payment History</h3>
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Order Code</th>
+    <th>Paid</th>
+    <th>Balance</th>
+    <th>Change</th>
+    <th>Status</th>
+    <th>Date</th> 
+</tr>
+
+@foreach($payments as $payment)
+<tr>
+    <td>ORD-{{ $payment->order_id }}</td>
+    <td>₱{{ $payment->amount_paid }}</td>
+    <td>₱{{ $payment->balance }}</td>
+    <td>₱{{ $payment->change }}</td>
+    <td>{{ $payment->status }}</td>
+    <td>{{ $payment->payment_date }}</td>
+</tr>
+@endforeach
+</table>

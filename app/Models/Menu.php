@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Menu extends Model
 {
-    protected $table = 'menus';
     protected $fillable = [
         'name',
-        'price_per_kg',
-        'stock_quantity',
-        'description',
+        'category',
+        'price_per_kilo',
+        'stock'
     ];
 
     public function orders()

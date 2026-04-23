@@ -6,17 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    protected $table = 'payments';
-
     protected $fillable = [
         'order_id',
         'amount_paid',
         'balance',
-        'payment_method',
+        'change',
         'status',
+        'payment_date' 
     ];
 
-    // Relationship: Payment belongs to Order
     public function order()
     {
         return $this->belongsTo(Order::class);
